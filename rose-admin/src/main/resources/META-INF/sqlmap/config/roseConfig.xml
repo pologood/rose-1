@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="roseConfig">
+
+	<typeAlias alias="roseConfigDo"
+		type="org.configframework.rose.admin.dataobject.RoseConfigDo" />
+
+	<sql id="roseConfig_columns">
+		id,
+		addTime,
+		updateTime,
+		appName,
+		configKey,
+		configValue,
+		configDesc,
+		operator,
+		isDeleted
+	</sql>
+
+	<insert id="roseConfig.insert" parameterClass="roseConfigDo">
+        <![CDATA[
+		INSERT INTO Rose_Config
+		(
+		id,
+		addTime,
+		updateTime,
+		appName,
+		configKey,
+		configValue,
+		configDesc,
+		operator,
+		isDeleted
+		)
+		VALUES(
+		#id#,
+		now(),
+		now(),
+		#appName#,
+		#configKey#,
+		#configValue#,
+		#configDesc#,
+		#operator#,
+		#isDeleted#
+		)
+		]]>
+		<selectKey keyProperty="id" resultClass="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <update id="roseConfig.updateConfigValueByKey" parameterClass="map">
+    	UPDATE Rose_Config
+    	SET   updateTime = now(),
+    	      configValue = #configValue#,
+    	      operator = #operator#
+    	WHERE configKey = #configKey# 
+    	AND   isDeleted = 0
+    </update>
+    
+    <update id="roseConfig.deleteByKey" parameterClass="map">
+    	UPDATE Rose_Config
+    	SET   updateTime = now(),
+    	      isDeleted = 1,
+    	      operator = #operator#
+    	WHERE configKey = #configKey# 
+    	AND   isDeleted = 0
+    </update>
+    
+    <select id="roseConfig.loadConfigByKey" parameterClass="map" resultClass="roseConfigDo">
+    	SELECT <include refid="roseConfig_columns"/>
+    	FROM Rose_Config
+    	WHERE configKey = #configKey# 
+    	AND   isDeleted = 0
+    </select>
+    
+    <select id="roseConfig.getConfigCount" parameterClass="map" resultClass ="java.lang.Integer">
+    	SELECT  count(*)
+    	FROM    Rose_Config
+    	WHERE 	isDeleted = 0
+    		<isNotEmpty prepend="and" property="configKey">
+				configKey = #configKey#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="appName">
+				appName = #appName#
+			</isNotEmpty>
+    </select>
+    
+    <select id="roseConfig.getConfigPageList" parameterClass="map" resultClass ="roseConfigDo">
+    	SELECT  <include refid="roseConfig_columns"/>
+    	FROM    Rose_Config
+    	WHERE 	isDeleted = 0
+    		<isNotEmpty prepend="and" property="configKey">
+				configKey = #configKey#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="appName">
+				appName = #appName#
+			</isNotEmpty>
+		ORDER BY id DESC
+		<include refid="paginationLimit"/>
+    </select>
+    
+    
+
+</sqlMap>

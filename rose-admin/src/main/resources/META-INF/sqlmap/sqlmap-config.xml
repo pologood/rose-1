@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings cacheModelsEnabled="true" enhancementEnabled="false"
+		lazyLoadingEnabled="false" maxRequests="3000" maxSessions="3000"
+		maxTransactions="3000" useStatementNamespaces="false" />
+	
+    <sqlMap resource="META-INF/sqlmap/config/sqlmap-global.xml"/>
+	
+	<!-- 配置表及配置变更log表 -->
+    <sqlMap resource="META-INF/sqlmap/config/roseConfig.xml"/>
+    <sqlMap resource="META-INF/sqlmap/config/roseConfigLog.xml"/>
+
+</sqlMapConfig>

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author yuantengkai
- *
+ * 环境信息
  */
 public class Environment {
 	
@@ -19,7 +19,7 @@ public class Environment {
 	
 	private static final String EnvFilePath = "/data/webapps/appenv";
 	
-	private static final String AppPropertyPath = "classpath:META-INF/app.properties";
+	private static final String RosePropertyPath = "classpath:META-INF/rose.properties";
 	
 	private static Properties props;
 	
@@ -29,8 +29,10 @@ public class Environment {
 		try {
 //			in = new FileInputStream(EnvFilePath);
 //			props.load(in);
-			props = PropertiesLoader.load(AppPropertyPath);
-			props.putAll(PropertiesLoader.load(EnvFilePath));
+			props = PropertiesLoader.load(EnvFilePath);
+			
+			props.putAll(PropertiesLoader.load(RosePropertyPath));//如果有重复的key 会替换掉之前的值
+			
 		} catch (FileNotFoundException e) {
 			logger.error("FileNotFoundException,filePath:"+EnvFilePath);
 		} catch (IOException e) {

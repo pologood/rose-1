@@ -42,6 +42,7 @@ public class ConfigZkManager {
 
 	private CuratorFramework zkClient;
 	
+	//可以为空,为空则代表是配置中心的zk操作
 	private ZkDataListener dataListener;
 	
 	private CuratorWatcher watcher;
@@ -66,9 +67,6 @@ public class ConfigZkManager {
 				.sessionTimeoutMs(sessionTimeoutMs);
 		zkClient = cBuilder.build();
 		zkClient.start();
-		if (!StringUtils.isBlank(metaData.getRootPath())) {
-			rootPath = metaData.getRootPath();
-		}
 		createNodePath(rootPath);
 		watcher = new ConfigZkDataWatcher(zkClient,dataListener);
 		zkClient.getConnectionStateListenable().addListener(

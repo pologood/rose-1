@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="roseConfigLog">
+
+	<typeAlias alias="roseConfigLogDo"
+		type="org.configframework.rose.admin.dataobject.RoseConfigLogDo" />
+	
+	<sql id="roseConfigLog_columns">
+		id,
+		addTime,
+		updateTime,
+		appName,
+		configKey,
+		configLastValue,
+		configNewValue,
+		operator,
+		optType
+	</sql>
+	
+	<insert id="roseConfigLog.insert" parameterClass="roseConfigLogDo">
+        <![CDATA[
+		INSERT INTO Rose_ConfigLog
+		(
+		id,
+		addTime,
+		updateTime,
+		appName,
+		configKey,
+		configLastValue,
+		configNewValue,
+		operator,
+		optType
+		)
+		VALUES(
+		#id#,
+		now(),
+		now(),
+		#appName#,
+		#configKey#,
+		#configLastValue#,
+		#configNewValue#,
+		#operator#,
+		#optType#
+		)
+		]]>
+		<selectKey keyProperty="id" resultClass="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <select id="roseConfigLog.getConfigLogCount" parameterClass="map" resultClass="java.lang.Integer">
+    	SELECT  count(*)
+    	FROM    Rose_ConfigLog
+   		WHERE   1 = 1
+    	<isNotEmpty prepend="and" property="configKey">
+			configKey = #configKey#
+		</isNotEmpty>
+		<isNotNull prepend="and" property="startTime">
+			<![CDATA[  addTime >= #startTime# ]]>
+		</isNotNull>
+		<isNotNull prepend="and" property="endTime">
+			<![CDATA[  addTime <= #endTime# ]]>
+		</isNotNull>
+    </select>
+    
+    <select id="roseConfigLog.getConfigLogPageList" parameterClass="map" resultClass="roseConfigLogDo">
+    	SELECT  <include refid="roseConfigLog_columns"/>
+    	FROM    Rose_ConfigLog
+    	WHERE   1 = 1
+    	<isNotEmpty prepend="and" property="configKey">
+			configKey = #configKey#
+		</isNotEmpty>
+		<isNotNull prepend="and" property="startTime">
+			<![CDATA[  addTime >= #startTime# ]]>
+		</isNotNull>
+		<isNotNull prepend="and" property="endTime">
+			<![CDATA[  addTime <= #endTime# ]]>
+		</isNotNull>
+		ORDER BY id DESC
+		<include refid="paginationLimit"/>
+    </select>
+
+
+</sqlMap>

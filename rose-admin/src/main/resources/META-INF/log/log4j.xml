@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//log4j/log4j Configuration//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	threshold="null" debug="null">
+    <!-- ===================================================================== -->
+    <!--  appender 配置                                                        -->
+    <!-- ===================================================================== -->
+    <appender name="ROOT" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="/data/applogs/rose-admin/logs/root.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss} [%c]-[%t]-[%M]-[%L]-[%p] %m%n"/>
+        </layout>
+    </appender>
+    
+    <appender name="ROSE-ADMIN" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="/data/applogs/rose-admin/logs/rose-admin.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss} [%c]-[%t]-[%M]-[%L]-[%p] %m%n"/>
+        </layout>
+    </appender>
+    
+    <appender name="ROSE-CORE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="/data/applogs/rose-admin/logs/rose-core.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss} [%c]-[%t]-[%M]-[%L]-[%p] %m%n"/>
+        </layout>
+    </appender>
+    
+    
+    <!-- ===================================================================== -->
+    <!--  logger 配置                                                        -->
+    <!-- ===================================================================== -->
+    <root>
+        <level value="ERROR"/>
+        <appender-ref ref="ROOT"/>
+    </root>
+    
+    <logger name="org.configframework.rose.admin" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="ROSE-ADMIN"/>
+    </logger>
+    
+    <logger name="org.configframework.rose.core" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="ROSE-CORE"/>
+    </logger>
+    
+	
+</log4j:configuration>

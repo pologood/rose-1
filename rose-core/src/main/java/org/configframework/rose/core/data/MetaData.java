@@ -13,8 +13,6 @@ public class MetaData {
 	
 	private String zkAddress = defaultZkAddress;
 	
-	private String rootPath = "/ROSEZK";
-
 	public String getZkAddress() {
 		return zkAddress;
 	}
@@ -22,14 +20,5 @@ public class MetaData {
 	public void setZkAddress(String zkAddress) {
 		this.zkAddress = zkAddress;
 	}
-
-	public String getRootPath() {
-		return rootPath;
-	}
-
-	public void setRootPath(String rootPath) {
-		this.rootPath = rootPath;
-	}
-	
 
 }

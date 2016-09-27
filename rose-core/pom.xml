@@ -1,21 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<!-- 
 	<parent>
-		<groupId>com.dianping</groupId>
-		<artifactId>dianping-parent</artifactId>
-		<version>2.1.0</version>
+		<groupId>org.configframework</groupId>
+		<artifactId>rose-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	 -->
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.configframework</groupId>
 	<artifactId>rose-core</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>rose-core</name>
 	
 	<properties>
-		<spring.version>3.2.14.RELEASE</spring.version>
+		<!-- <spring.version>3.0.6.RELEASE</spring.version>  -->
 	</properties>
 	
 	<dependencies>
@@ -36,25 +33,7 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.4</version>
 		</dependency>
-		<!-- springframe start -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		 -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<!-- springframe end -->
+		
 		<!-- log4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

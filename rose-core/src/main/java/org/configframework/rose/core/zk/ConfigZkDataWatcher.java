@@ -9,6 +9,8 @@ import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.configframework.rose.core.ZkDataListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author yuantengkai
@@ -18,6 +20,8 @@ import org.configframework.rose.core.ZkDataListener;
  * data value:上述nodePath节点上的数据
  */
 public class ConfigZkDataWatcher implements CuratorWatcher{
+	
+	private static final Logger logger = LoggerFactory.getLogger(ConfigZkDataWatcher.class);
 	
 	private CuratorFramework zkClient;
 	
@@ -35,11 +39,17 @@ public class ConfigZkDataWatcher implements CuratorWatcher{
 			
 			if (event.getType() == EventType.NodeDataChanged){
 				byte[] b = zkClient.getData().usingWatcher(this).forPath(event.getPath());
-				dataListener.onDataChange(getKey(event.getPath()), new String(b,"utf-8"));
-//				System.out.println("NodeDataChanged,key:"+getKey(event.getPath())+",new value:"+new String(b,"utf-8"));
+				if(dataListener != null){//说明是客户端
+					dataListener.onDataChange(getKey(event.getPath()), new String(b,"utf-8"));
+				} else {//说明是配置中心
+					logger.warn("NodeDataChanged,key:"+getKey(event.getPath())+",new value:"+new String(b,"utf-8"));
+				}
 			} else if(event.getType() == EventType.NodeDeleted){
-				dataListener.onDataDeleted(getKey(event.getPath()));
-//				System.out.println("NodeDeleted,key:"+getKey(event.getPath()));
+				if(dataListener != null){
+					dataListener.onDataDeleted(getKey(event.getPath()));
+				} else {
+					logger.warn("NodeDeleted,key:"+getKey(event.getPath()));
+				}
 			}
 		}
 		
