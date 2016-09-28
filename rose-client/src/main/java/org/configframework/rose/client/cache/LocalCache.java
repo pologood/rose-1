@@ -54,7 +54,7 @@ public class LocalCache implements ZkDataListener{
 		metaData.setZkAddress(zkAddress);
 		zkManager = new ConfigZkManager(metaData,this);
 		try {
-			zkManager.start();
+			zkManager.start(true);
 		} catch (Exception e) {
 			logger.error("ConfigZkManager start exception,zkAddress:"+zkAddress,e);
 			throw new RoseException("ConfigZkManager start exception.",e);
@@ -91,8 +91,14 @@ public class LocalCache implements ZkDataListener{
 			}
 		}
 		listenerList.add(listener);
+		//对应用所关心的项目添加节点变化监听
+//		try{
+//			zkManager.addProjectNodeWatch(appName);
+//		}catch(Exception e){
+//			logger.error("zkManager addProjectNodeWatch exception,appName:"+appName,e);
+//		}
 	}
-
+	
 	@Override
 	public void onDataChange(String key, String value) {
 		kvCache.put(key, value);

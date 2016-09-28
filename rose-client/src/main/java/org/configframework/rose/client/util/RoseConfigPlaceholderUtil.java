@@ -32,6 +32,8 @@ import org.springframework.util.StringValueResolver;
  *         <bean id="roseConfigPlaceholderUtil"
  *         class="org.configframework.rose.client.util.RoseConfigPlaceholderUtil"
  *         />
+ *         要优先于org.springframework.beans.factory.config.PropertyPlaceholderConfigurer<br/>
+ *         如果rose上没配，则会从PropertyPlaceholderConfigurer里加载的去取
  */
 public class RoseConfigPlaceholderUtil extends PropertyPlaceholderConfigurer {
 	
@@ -132,11 +134,11 @@ public class RoseConfigPlaceholderUtil extends PropertyPlaceholderConfigurer {
 			StringBuffer buf = new StringBuffer(strVal);
 			boolean start = strVal.startsWith(placeholderPrefix);
 			boolean end = strVal.endsWith(placeholderSuffix);
-			//暂不支持嵌套的key
+			//TODO 暂不支持嵌套的key,就是value中配的是另外的key
 			if (start && end) {
 				String placeholderKey = buf.substring(placeholderPrefix.length(),
 						buf.length() - placeholderSuffix.length());
-				//TODO 如果是内部properties的替换符，比如jdbc的，那么会不会也是通过rose的方式替换
+				//如果是内部properties的替换符，那么rose中配置了就从rose取；若没配，则通过PropertyPlaceholderConfigurer取内部的
 				String value = RoseConfigUtil.getValue(placeholderKey);
 				if(value != null){
 					buf = new StringBuffer(value);

@@ -37,7 +37,7 @@ public class ConfigZkManager {
 	private static final int sessionTimeoutMs = 60000;
 	
 	private AtomicBoolean initFlag = new AtomicBoolean(false);
-
+	
 	private String rootPath = "/ROSEZK";
 
 	private CuratorFramework zkClient;
@@ -54,7 +54,7 @@ public class ConfigZkManager {
 		this.dataListener = dataListener;
 	}
 
-	public void start() throws Exception {
+	public void start(boolean clientFlag) throws Exception {
 		if(!initFlag.compareAndSet(false, true)){
 			return;
 		}
@@ -67,7 +67,7 @@ public class ConfigZkManager {
 				.sessionTimeoutMs(sessionTimeoutMs);
 		zkClient = cBuilder.build();
 		zkClient.start();
-		createNodePath(rootPath);
+		createNodePath(rootPath,null);
 		watcher = new ConfigZkDataWatcher(zkClient,dataListener);
 		zkClient.getConnectionStateListenable().addListener(
 				new ConnectionStateListener() {
@@ -84,18 +84,21 @@ public class ConfigZkManager {
 					}
 
 				});
-
+		logger.warn("#########connect to zk success,with clientMode:"+clientFlag);
 	}
 	
 	public void stop(){
 		zkClient.close();
 	}
 	
-	private void createNodePath(String nodePath) throws Exception{
+	private void createNodePath(String nodePath, String value) throws Exception{
 		Stat stat = zkClient.checkExists().forPath(nodePath);
+		if(StringUtils.isBlank(value)){
+			value = "R0";
+		}
 		if (stat == null) {
 			String createPath = zkClient.create()
-					.withMode(CreateMode.PERSISTENT).forPath(nodePath);
+					.withMode(CreateMode.PERSISTENT).forPath(nodePath,value.getBytes("utf-8"));
 			if (!StringUtils.isBlank(createPath)) {
 				logger.warn("zknode created," + nodePath);
 			} else {
@@ -123,7 +126,7 @@ public class ConfigZkManager {
 								.blockUntilConnectedOrTimedOut()) {
 							logger.warn("zookeeper reconnected success.");
 							// 此时可能rootNode不存在,需要重新创建
-							createNodePath(rootPath);
+							createNodePath(rootPath,null);
 							break;
 						}
 					} catch (InterruptedException e) {
@@ -143,7 +146,7 @@ public class ConfigZkManager {
 	}
 
 	/**
-	 * 新增一个配置项
+	 * 新增一个配置项 限服务端用
 	 * @param key {projectname}.keyname <br/>
 	 * exm: shop-business-web.xxx.sss.ddd
 	 * @param value
@@ -151,17 +154,17 @@ public class ConfigZkManager {
 	public void addData(String key,String value) throws Exception{
 		String keyPath = getKeyPath(key);
 		String projectPath = getProjectPath(key);
-		createNodePath(projectPath);//必须先确保 projectPath存在，不然直接创建keyPath会报错
-		createNodePath(keyPath);
+		createNodePath(projectPath,null);//必须先确保 projectPath存在，不然直接创建keyPath会报错
+		createNodePath(keyPath,value);
 		
 //		CuratorWatcher watcher = new ConfigZkDataWatcher(zkClient, projectPath);
 		zkClient.getData().usingWatcher(watcher).forPath(keyPath);//data watch只能watch当前节点上的data
 		
-		_setData(keyPath, value);
+//		_setData(keyPath, value);
 	}
 	
 	/**
-	 * 更新一个配置项
+	 * 更新一个配置项 限服务端用
 	 * @param key {projectname}.keyname <br/>
 	 * exm: shop-business-web.xxx.sss.ddd
 	 * @param value
@@ -173,7 +176,7 @@ public class ConfigZkManager {
 	}
 	
 	/**
-	 * 删除一个配置项
+	 * 删除一个配置项 限服务端用
 	 * @param key {projectname}.keyname <br/>
 	 * exm: shop-business-web.xxx.sss.ddd
 	 * @throws Exception 
@@ -183,17 +186,36 @@ public class ConfigZkManager {
 		_deleteData(keyPath);
 	}
 	
+	/**
+	 * 得到对应的配置值 客户端可以使用
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
 	public String getData(String key) throws Exception{
 		String keyPath = getKeyPath(key);
 		return _getData(keyPath);
 	}
 	
+	/**
+	 * 添加节点变化监听 限客户端
+	 * @param appName
+	 * @throws Exception
+	 */
+//	public void addProjectNodeWatch(String appName) throws Exception{
+//		if(clientFlag){
+//			String projectPath = rootPath + "/"+ appName;
+//			createNodePath(projectPath);
+////			zkClient.getChildren().usingWatcher(watcher).forPath(projectPath);
+//		}
+//	}
+	
 	private String _getData(String keyPath) throws Exception {
-		Stat stat = zkClient.checkExists().forPath(keyPath);
+		Stat stat = zkClient.checkExists().usingWatcher(watcher).forPath(keyPath);
 		if(stat == null){
 			return null;
 		}
-		byte[] b = zkClient.getData().usingWatcher(watcher).forPath(keyPath);
+		byte[] b = zkClient.getData().forPath(keyPath);
 		if(b != null){
 			return new String(b,"utf-8");
 		}
@@ -220,7 +242,7 @@ public class ConfigZkManager {
 	/**
 	 * 
 	 * @param key shop-business-web.sss.ddd.xxx
-	 * @return /shop-business-web/sss.ddd.xxx
+	 * @return /rootPath/shop-business-web/sss.ddd.xxx
 	 */
 	private  String getKeyPath(String key){
 		String tmp = key.replaceFirst("\\.", "/");
@@ -237,7 +259,7 @@ public class ConfigZkManager {
 		MetaData md = new MetaData();
 		
 		ConfigZkManager manager = new ConfigZkManager(md,null);
-		manager.start();
+		manager.start(false);
 		manager.addData("shop-business-web2.sss.yyy.xxx", "你好");
 		manager.addData("shop-business-web2.sss.yyy.xxx2", "hello");
 		Thread.sleep(3000);

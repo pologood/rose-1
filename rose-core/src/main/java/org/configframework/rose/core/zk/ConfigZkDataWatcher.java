@@ -36,7 +36,6 @@ public class ConfigZkDataWatcher implements CuratorWatcher{
 	public void process(WatchedEvent event) throws Exception {
 		
 		if (zkClient.getState() != CuratorFrameworkState.STOPPED){
-			
 			if (event.getType() == EventType.NodeDataChanged){
 				byte[] b = zkClient.getData().usingWatcher(this).forPath(event.getPath());
 				if(dataListener != null){//说明是客户端
@@ -46,15 +45,24 @@ public class ConfigZkDataWatcher implements CuratorWatcher{
 				}
 			} else if(event.getType() == EventType.NodeDeleted){
 				if(dataListener != null){
+					zkClient.checkExists().usingWatcher(this).forPath(event.getPath());
 					dataListener.onDataDeleted(getKey(event.getPath()));
 				} else {
 					logger.warn("NodeDeleted,key:"+getKey(event.getPath()));
+				}
+			} else if (event.getType() == EventType.NodeCreated){
+				byte[] b = zkClient.getData().usingWatcher(this).forPath(event.getPath());
+				if(dataListener != null){
+					dataListener.onDataChange(getKey(event.getPath()), new String(b,"utf-8"));
+				} else {
+					logger.warn("NodeCreated,key:"+getKey(event.getPath())+",with value:"+new String(b,"utf-8"));
 				}
 			}
 		}
 		
 	}
 	
+
 	private String getKey(String keyPath){
 		int i = keyPath.indexOf("/", 2);
 		String tmp = keyPath.substring(i+1);
@@ -63,9 +71,12 @@ public class ConfigZkDataWatcher implements CuratorWatcher{
 	
 	public static void main(String[] args) {
 		String p = "/rootpath/shop-business-admin/sss.ssdd.dddd";
-		int i = p.indexOf("/", 2);
-		String tmp = p.substring(i+1);
-		System.out.println(tmp.replaceAll("/", "."));
+		String[] array = p.split("/");
+		System.out.println(array.length);
+		System.out.println(array[0]+"/"+array[1]+"/"+array[2]);
+		System.out.println(array[2]+"."+array[3]);
+		int i = p.lastIndexOf("/");
+		System.out.println(p.substring(0,i));
 	}
 	
 

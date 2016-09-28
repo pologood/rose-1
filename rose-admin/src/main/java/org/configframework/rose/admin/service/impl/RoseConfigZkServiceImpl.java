@@ -36,7 +36,7 @@ public class RoseConfigZkServiceImpl implements RoseConfigService{
 		metaData.setZkAddress(zkAddress);
 		zkManager = new ConfigZkManager(metaData,null);
 		try {
-			zkManager.start();
+			zkManager.start(false);
 		} catch (Exception e) {
 			logger.error("ConfigZkManager start exception,zkAddress:"+zkAddress,e);
 			throw new RuntimeException("ConfigZkManager start exception.",e);

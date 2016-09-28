@@ -22,6 +22,7 @@
 		<module>rose-core</module>
 		<module>rose-client</module>
 		<module>rose-admin</module>
+		<module>rose-demo</module>
 	</modules>
 
 	<dependencyManagement>
