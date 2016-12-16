@@ -28,7 +28,7 @@ public class WebExceptionResolver implements HandlerExceptionResolver{
 	public ModelAndView resolveException(HttpServletRequest request,
 			HttpServletResponse response, Object handler, Exception ex) {
 		
-		logger.error("web请求b捕获异常WebExceptionResolver,", ex);
+		logger.error("web请求捕获异常WebExceptionResolver,", ex);
 		
 		ModelAndView mv = new ModelAndView();
 		HandlerMethod method = (HandlerMethod) handler;

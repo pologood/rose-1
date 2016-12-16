@@ -23,7 +23,7 @@ public class RoseConfigDaoImpl extends PageSqlMapClientDaoSupport<RoseConfigDo> 
 
 	@Override
 	public long addConfig(RoseConfigDo configDo) throws SQLException {
-		Long id = (Long) getSqlMapClient().insert("roseConfig.insert",configDo);
+		Long id = (Long) getSqlMapClientTemplate().insert("roseConfig.insert",configDo);
 		if(id == null){
 			return 0;
 		}
